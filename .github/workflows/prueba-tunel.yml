@@ -1,0 +1,14 @@
+name: prueba-tunel
+on: workflow_dispatch            # se ejecuta solo cuando tú lo lanzas
+jobs:
+  descarga:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Centro de Cloudflare que atiende
+        run: curl -s "${{ secrets.POC_URL }}/cdn-cgi/trace" | grep -E "^(colo|loc)="
+      - name: Tres descargas
+        run: |
+          for i in 1 2 3; do
+            curl -o /dev/null -s -w "intento $i: %{time_total} s · %{speed_download} B/s\n" \
+              "${{ secrets.POC_URL }}/grande.bin?t=$(date +%s%N)"
+          done
